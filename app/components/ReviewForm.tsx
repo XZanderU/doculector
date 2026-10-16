@@ -84,6 +84,7 @@ export default function ReviewForm({ initialData }: { initialData: ExtractedData
           data={[formData]} 
           headers={csvHeaders}
           filename={`factura_${formData.invoice_number}.csv`}
+          separator={";"} // separar valores en exportación de excel
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           Aprobar y Exportar a CSV
