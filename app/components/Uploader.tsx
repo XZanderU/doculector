@@ -1,6 +1,5 @@
 "use client";
 import { useState } from 'react';
-// Importamos nuestro procesador XML que creamos en la fase 4
 import { processDIANXml, ExtractedData } from '../../lib/processors/xmlProcessor'; 
 
 interface UploaderProps {
