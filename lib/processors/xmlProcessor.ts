@@ -25,19 +25,22 @@ export async function processDIANXml(xmlString: string): Promise<ExtractedData> 
   }
 
   // Extracción segura (evitamos inventar datos si fallan)
-  const supplierParty = invoice['cac:AccountingSupplierParty']?.['cac:Party'];
-  const taxTotal = invoice['cac:TaxTotal']?.['cbc:TaxAmount']?.['#text'];
-  const legalMonetaryTotal = invoice['cac:LegalMonetaryTotal'];
 
-  // Función para extraer el valor de forma segura
+   // Función para extraer el valor de forma segura
   const getXmlValue = (node: any) => {
     if (node === undefined || node === null) return null;
     return node['#text'] !== undefined ? node['#text'] : node;
   };
 
+  const supplierParty = invoice['cac:AccountingSupplierParty']?.['cac:Party'];
+  const taxTotal = invoice['cac:TaxTotal']?.['cbc:TaxAmount']?.['#text'];
+  const legalMonetaryTotal = invoice['cac:LegalMonetaryTotal'];
+
   const subtotalValue = getXmlValue(legalMonetaryTotal?.['cbc:LineExtensionAmount']);
   const taxValue = getXmlValue(taxTotal);
   const totalValue = getXmlValue(legalMonetaryTotal?.['cbc:PayableAmount']);
+
+  
 
   return {
     invoice_number: invoice['cbc:ID'] || null,
@@ -52,16 +55,17 @@ export async function processDIANXml(xmlString: string): Promise<ExtractedData> 
     total: totalValue !== null ? parseFloat(totalValue) : null,
   };
 
-    return {
-      invoice_number: invoice['cbc:ID'] || null,
-      issue_date: invoice['cbc:IssueDate'] || null,
-      currency: invoice['cbc:DocumentCurrencyCode'] || 'COP',
-      
-      supplier_name: supplierParty?.['cac:PartyTaxScheme']?.['cbc:RegistrationName'] || null,
-      supplier_tax_id: supplierParty?.['cac:PartyTaxScheme']?.['cbc:CompanyID']?.['#text'] || null,
-      
-      subtotal: legalMonetaryTotal?.['cbc:LineExtensionAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:LineExtensionAmount']['#text']) : null,
-      tax_total: taxTotal ? parseFloat(taxTotal) : null,
-      total: legalMonetaryTotal?.['cbc:PayableAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:PayableAmount']['#text']) : null,
-    };
-  }
+  return {
+    invoice_number: invoice['cbc:ID'] || null,
+    issue_date: invoice['cbc:IssueDate'] || null,
+    currency: invoice['cbc:DocumentCurrencyCode'] || 'COP',
+    
+    supplier_name: supplierParty?.['cac:PartyTaxScheme']?.['cbc:RegistrationName'] || null,
+    supplier_tax_id: supplierParty?.['cac:PartyTaxScheme']?.['cbc:CompanyID']?.['#text'] || null,
+    
+    subtotal: legalMonetaryTotal?.['cbc:LineExtensionAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:LineExtensionAmount']['#text']) : null,
+    tax_total: taxTotal ? parseFloat(taxTotal) : null,
+    total: legalMonetaryTotal?.['cbc:PayableAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:PayableAmount']['#text']) : null,
+  };
+}
+
