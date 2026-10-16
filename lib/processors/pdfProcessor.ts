@@ -1,4 +1,4 @@
-import pdf from 'pdf-parse';
+const pdf = require('pdf-parse');
 import { ExtractedData } from './xmlProcessor'; // Reutilizamos la misma estructura del XML
 
 // La función recibe un "Buffer". Un Buffer es la forma en que Node.js (el servidor) 
