@@ -13,12 +13,14 @@
     "fast-xml-parser": "^5.11.2",
     "next": "16.4.2",
     "react": "19.3.0",
+    "react-csv": "^2.2.2",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
+    "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
