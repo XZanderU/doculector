@@ -29,16 +29,39 @@ export async function processDIANXml(xmlString: string): Promise<ExtractedData> 
   const taxTotal = invoice['cac:TaxTotal']?.['cbc:TaxAmount']?.['#text'];
   const legalMonetaryTotal = invoice['cac:LegalMonetaryTotal'];
 
+  // Función para extraer el valor de forma segura
+  const getXmlValue = (node: any) => {
+    if (node === undefined || node === null) return null;
+    return node['#text'] !== undefined ? node['#text'] : node;
+  };
+
+  const subtotalValue = getXmlValue(legalMonetaryTotal?.['cbc:LineExtensionAmount']);
+  const taxValue = getXmlValue(taxTotal);
+  const totalValue = getXmlValue(legalMonetaryTotal?.['cbc:PayableAmount']);
+
   return {
     invoice_number: invoice['cbc:ID'] || null,
     issue_date: invoice['cbc:IssueDate'] || null,
     currency: invoice['cbc:DocumentCurrencyCode'] || 'COP',
     
     supplier_name: supplierParty?.['cac:PartyTaxScheme']?.['cbc:RegistrationName'] || null,
-    supplier_tax_id: supplierParty?.['cac:PartyTaxScheme']?.['cbc:CompanyID']?.['#text'] || null,
+    supplier_tax_id: getXmlValue(supplierParty?.['cac:PartyTaxScheme']?.['cbc:CompanyID']),
     
-    subtotal: legalMonetaryTotal?.['cbc:LineExtensionAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:LineExtensionAmount']['#text']) : null,
-    tax_total: taxTotal ? parseFloat(taxTotal) : null,
-    total: legalMonetaryTotal?.['cbc:PayableAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:PayableAmount']['#text']) : null,
+    subtotal: subtotalValue !== null ? parseFloat(subtotalValue) : null,
+    tax_total: taxValue !== null ? parseFloat(taxValue) : null,
+    total: totalValue !== null ? parseFloat(totalValue) : null,
   };
-}
+
+    return {
+      invoice_number: invoice['cbc:ID'] || null,
+      issue_date: invoice['cbc:IssueDate'] || null,
+      currency: invoice['cbc:DocumentCurrencyCode'] || 'COP',
+      
+      supplier_name: supplierParty?.['cac:PartyTaxScheme']?.['cbc:RegistrationName'] || null,
+      supplier_tax_id: supplierParty?.['cac:PartyTaxScheme']?.['cbc:CompanyID']?.['#text'] || null,
+      
+      subtotal: legalMonetaryTotal?.['cbc:LineExtensionAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:LineExtensionAmount']['#text']) : null,
+      tax_total: taxTotal ? parseFloat(taxTotal) : null,
+      total: legalMonetaryTotal?.['cbc:PayableAmount']?.['#text'] ? parseFloat(legalMonetaryTotal['cbc:PayableAmount']['#text']) : null,
+    };
+  }
